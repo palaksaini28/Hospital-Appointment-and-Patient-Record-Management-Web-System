@@ -1,0 +1,9 @@
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS prescriptions, records, appointments, doctors, hospitals, users;
+SET FOREIGN_KEY_CHECKS=1;
+CREATE TABLE users(id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(100) NOT NULL,email VARCHAR(120) NOT NULL UNIQUE,password VARCHAR(100) NOT NULL,phone VARCHAR(20),role ENUM('patient','doctor','admin') NOT NULL DEFAULT 'patient',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE hospitals(id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(120) NOT NULL,city VARCHAR(80),address VARCHAR(200));
+CREATE TABLE doctors(id INT AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,hospital_id INT NOT NULL,name VARCHAR(100) NOT NULL,specialty VARCHAR(80) NOT NULL,fee INT DEFAULT 500,FOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(hospital_id) REFERENCES hospitals(id));
+CREATE TABLE appointments(id INT AUTO_INCREMENT PRIMARY KEY,patient_id INT NOT NULL,doctor_id INT NOT NULL,date DATE NOT NULL,time TIME NOT NULL,reason VARCHAR(255),status ENUM('pending','confirmed','completed','cancelled') DEFAULT 'pending',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(patient_id) REFERENCES users(id),FOREIGN KEY(doctor_id) REFERENCES doctors(id));
+CREATE TABLE records(id INT AUTO_INCREMENT PRIMARY KEY,patient_id INT NOT NULL,doctor_id INT NOT NULL,diagnosis VARCHAR(200) NOT NULL,notes TEXT,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(patient_id) REFERENCES users(id),FOREIGN KEY(doctor_id) REFERENCES doctors(id));
+CREATE TABLE prescriptions(id INT AUTO_INCREMENT PRIMARY KEY,patient_id INT NOT NULL,doctor_id INT NOT NULL,medicine VARCHAR(120) NOT NULL,dosage VARCHAR(80),duration VARCHAR(60),instructions VARCHAR(255),status ENUM('active','completed') DEFAULT 'active',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(patient_id) REFERENCES users(id),FOREIGN KEY(doctor_id) REFERENCES doctors(id));
